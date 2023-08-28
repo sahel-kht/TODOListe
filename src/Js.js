@@ -15,6 +15,7 @@ function hinzufuegen() {
         // Ein neues <li> Element erstellen und den Text der Aufgabe setzen
         var li = document.createElement("li");
         li.textContent = taskText;
+        taskInput.value=null;
 
         // Ein "Löschen" Button erstellen
         var deleteButton = document.createElement("button");
