@@ -1,46 +1,74 @@
 // Js.js
 
-// Funktion zum Hinzufügen einer Aufgabe
-function hinzufuegen() {
-    // Eingabefeld für die Aufgabe abrufen
-    var taskInput = document.getElementById("Hinzufügen");
-    // Den eingegebenen Text aus dem Eingabefeld abrufen
-    var taskText = taskInput.value;
+// Function to save tasks to localStorage
+function saveTasksToLocalStorage(tasks) {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+}
 
-    // Prüfen, ob der eingegebene Text nicht leer ist
-    if (taskText !== "") {
-        // Aufgabenliste und Aufgaben-Container im HTML abrufen
-        var taskList = document.getElementById("task-list");
+// Function to load tasks from localStorage
+function loadTasksFromLocalStorage() {
+    var tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    var taskList = document.getElementById("task-list");
 
-        // Ein neues <li> Element erstellen und den Text der Aufgabe setzen
+    taskList.innerHTML = ""; // Clear existing list
+
+    tasks.forEach(function (taskText) {
         var li = document.createElement("li");
         li.textContent = taskText;
-        taskInput.value=null;
 
-        // Ein "Löschen" Button erstellen
         var deleteButton = document.createElement("button");
         deleteButton.textContent = "Löschen";
-        deleteButton.className = "delete"; // CSS-Klasse für das Styling
-        // Event Listener für das Klicken des "Löschen" Buttons hinzufügen
+        deleteButton.className = "delete";
         deleteButton.addEventListener("click", function () {
-            // Das <li> Element aus der Aufgabenliste entfernen
             taskList.removeChild(li);
-            // Aufgabe aus dem Local Storage entfernen
             removeTaskFromLocalStorage(taskText);
         });
 
-        // Den "Löschen" Button zum <li> Element hinzufügen
         li.appendChild(deleteButton);
-        // Das <li> Element zur Aufgabenliste hinzufügen
+        taskList.appendChild(li);
+    });
+}
+
+// Function to add a task to the list and save it in localStorage
+function hinzufuegen() {
+    var taskInput = document.getElementById("Hinzufügen");
+    var taskText = taskInput.value;
+
+    if (taskText !== "") {
+        var taskList = document.getElementById("task-list");
+        var li = document.createElement("li");
+        li.textContent = taskText;
+
+        var deleteButton = document.createElement("button");
+        deleteButton.textContent = "Löschen";
+        deleteButton.className = "delete";
+        deleteButton.addEventListener("click", function () {
+            taskList.removeChild(li);
+            removeTaskFromLocalStorage(taskText);
+        });
+
+        li.appendChild(deleteButton);
         taskList.appendChild(li);
 
-        // Aufgabe zum Local Storage hinzufügen
-        addTaskToLocalStorage(taskText);
+        var tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        tasks.push(taskText);
+        saveTasksToLocalStorage(tasks);
 
-        // Eingabefeld leeren und Fokus darauf setzen
         taskInput.value = "";
         taskInput.focus();
     }
 }
 
-;
+// Function to remove a task from the list and localStorage
+function removeTaskFromLocalStorage(taskToRemove) {
+    var tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    var updatedTasks = tasks.filter(function (task) {
+        return task !== taskToRemove;
+    });
+    saveTasksToLocalStorage(updatedTasks);
+}
+
+// Load tasks from localStorage when the page is ready
+document.addEventListener("DOMContentLoaded", function () {
+    loadTasksFromLocalStorage();
+});
